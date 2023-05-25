@@ -15,6 +15,19 @@ const BookController = class {
     }
   }
 
+  getBookById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const book = await this.bookService.findBookById(id);
+      if (!book) {
+        return ResponseFormatter.error(res, null, "Book not found", 404);
+      }
+      return ResponseFormatter.success(res, book, "Get book by id success");
+    } catch (error) {
+      return ResponseFormatter.error(res, error, "Get book by id failed", 400);
+    }
+  }
+
   storeBook = async (req, res) => {
     try {
       const payload = req.body;

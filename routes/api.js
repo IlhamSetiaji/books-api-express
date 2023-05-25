@@ -6,6 +6,7 @@ const BookController = require('../controllers/API/BookController');
 const storeBookValidation = require('../validations/API/Book/StoreBookValidation');
 
 router.get('/books', BookController.getAllbooks);
+router.get('/books/:id', BookController.getBookById);
 router.post('/books', upload.any(), storeBookValidation, BookController.storeBook);
 router.post('/books/:id', upload.any(), storeBookValidation, BookController.updateBook);
 router.delete('/books/:id', BookController.deleteBook);
