@@ -1,7 +1,7 @@
 # books-api-express
 ## About This Project
 
-This project is build using Express JS. Implements Repository-Service Pattern, Prisma ORM, and Express Validation.
+This project is build using Express JS. Implements Repository-Service Pattern, Prisma ORM, Express Validation, API JWT Token, and Web-Based Passport Authentication.
 
 ## Clone project
 ```
