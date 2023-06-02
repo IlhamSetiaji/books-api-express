@@ -9,11 +9,6 @@ module.exports = function (passport) {
     });
 
     passport.deserializeUser(function (id, done) {
-        // prisma.user({ id: id }).then(function(user) {
-        //     done(null, user);
-        // }).catch(function(err) {
-        //     done(err, null);
-        // });
         prisma.user
             .findUnique({ where: { id: id } })
             .then(function (user) {
@@ -70,6 +65,7 @@ module.exports = function (passport) {
         )
     );
 
+    // local login
     passport.use(
         "local-login",
         new LocalStrategy(
