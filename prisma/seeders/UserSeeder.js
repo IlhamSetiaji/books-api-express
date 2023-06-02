@@ -8,6 +8,7 @@ main = async() => {
             name: 'Adri Sabik',
             email: 'adri@test.test',
             password: await bcrypt.hash('password', 10),
+            emailVerifiedAt: new Date().toISOString()
         }
     });
 
@@ -16,6 +17,7 @@ main = async() => {
             name: 'Refinaldy Madras',
             email: 'refi@test.test',
             password: await bcrypt.hash('password', 10),
+            emailVerifiedAt: new Date().toISOString()
         }
     });
     console.log({ sabik, refi });
@@ -25,7 +27,7 @@ main().then(async() => {
     console.log('Seeding completed.');
     await prisma.$disconnect();
 }).catch(async(e) => {
-    console.log('Seeding failed.');
+    console.log(e);
     await prisma.$disconnect();
     process.exit(1);
 });
