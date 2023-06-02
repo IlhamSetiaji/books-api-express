@@ -35,4 +35,13 @@ npx prisma migrate dev --name init
 npm start
 ```
 
-### Enjoy
+### Launch Web
+```
+http://127.0.0.1:3000/
+```
+
+### Launch API
+```
+http://127.0.0.1:3000/api/
+```
+
