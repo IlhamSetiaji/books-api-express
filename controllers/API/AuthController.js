@@ -126,6 +126,64 @@ const AuthController = class {
         }
     };
 
+    resetPassword = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const user = await this.userService.resetPassword(email);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Reset password success"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Reset password failed",
+                400
+            );
+        }
+    };
+
+    changePassword = async (req, res) => {
+        try {
+            const { token } = req.params;
+            const { password } = req.body;
+            const user = await this.userService.changePassword(token, password);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Change password success"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Change password failed",
+                400
+            );
+        }
+    };
+
+    resendPasswordReset = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const user = await this.userService.resendPasswordReset(email);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Reset password sent"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Reset password failed",
+                400
+            );
+        }
+    };
+
     profile = async (req, res) => {
         try {
             return ResponseFormatter.success(

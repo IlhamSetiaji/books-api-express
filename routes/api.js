@@ -7,6 +7,8 @@ const AuthController = require('../controllers/API/AuthController');
 const storeBookValidation = require('../validations/API/Book/StoreBookValidation');
 const storeUserValidation = require('../validations/API/User/StoreUserValidation');
 const loginValidation = require('../validations/API/User/LoginValidation');
+const userEmailValidation = require('../validations/API/User/UserEmailValidation');
+const passwordResetValidation = require('../validations/API/User/PasswordResetValidation');
 const passport = require('passport');
 require('../config/passport-api')(passport);
 const isVerified = (req, res, next) => {
@@ -20,7 +22,10 @@ router.post('/login', upload.any(), loginValidation, AuthController.login);
 router.post('/signup', upload.any(), storeUserValidation, AuthController.signUp);
 
 router.get('/auth/verify/:token', AuthController.verifyEmail);
-router.post('/auth/resend', upload.any(), AuthController.resendEmailVerification);
+router.post('/auth/resend', upload.any(), userEmailValidation, AuthController.resendEmailVerification);
+router.post('/auth/reset', upload.any(), userEmailValidation, AuthController.resetPassword);
+router.post('/auth/resend-reset', upload.any(), userEmailValidation, AuthController.resendPasswordReset);
+router.post('/auth/reset-password/:token', upload.any(), passwordResetValidation, AuthController.changePassword);
 //secure route
 router.get(
     '/profile',

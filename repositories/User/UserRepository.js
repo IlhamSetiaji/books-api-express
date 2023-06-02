@@ -55,6 +55,17 @@ const UserRepository = class {
             }
         });
     }
+
+    changePassword(user, password) {
+        return this.prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: password
+            }
+        });
+    }
 }
 
 module.exports = UserRepository;
