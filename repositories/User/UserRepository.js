@@ -14,6 +14,58 @@ const UserRepository = class {
             }
         });
     }
+
+    register(data) {
+        return this.prisma.user.create({
+            data: {
+                email: data.email,
+                name: data.name,
+                password: data.password
+            }
+        });
+    }
+
+    saveToken(user, token) {
+        return this.prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                token: token
+            }
+        });
+    }
+
+    findByToken(token) {
+        return this.prisma.user.findFirst({
+            where: {
+                token: token
+            }
+        });
+    }
+
+    verifyEmail(user) {
+        return this.prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                token: null,
+                emailVerifiedAt: new Date().toISOString()
+            }
+        });
+    }
+
+    changePassword(user, password) {
+        return this.prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: password
+            }
+        });
+    }
 }
 
 module.exports = UserRepository;

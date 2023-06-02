@@ -27,7 +27,7 @@ npm install
 
 ## Migrate the database
 ```
-npx prisma migrate dev --name init
+npx prisma db push
 ```
 
 ### Compiles and hot-reloads for development

@@ -1,4 +1,5 @@
 const ResponseFormatter = require("../../helpers/ResponseFormatter");
+const UserService = require("../../services/User/UserService");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 require("../../config/passport-api")(passport);
@@ -6,6 +7,7 @@ require("../../config/passport-api")(passport);
 const AuthController = class {
     constructor() {
         this.passport = passport;
+        this.userService = new UserService();
     }
 
     exclude = async (obj, keys) => {
@@ -73,54 +75,112 @@ const AuthController = class {
 
     signUp = async (req, res, next) => {
         try {
-            await this.passport.authenticate(
-                "local-signup",
-                async (err, user, info) => {
-                    try {
-                        if (err || !user) {
-                            return ResponseFormatter.error(
-                                res,
-                                err,
-                                err ? err.message : info.message,
-                                400
-                            );
-                        }
-                        req.login(user, { session: false }, async (error) => {
-                            if (error) {
-                                return ResponseFormatter.error(
-                                    res,
-                                    error,
-                                    "Sign up failed",
-                                    400
-                                );
-                            }
-                            const token = jwt.sign(user, "authToken", {
-                                expiresIn: "1d",
-                            });
-                            return ResponseFormatter.success(
-                                res,
-                                {
-                                    tokenType: "bearer token",
-                                    token,
-                                    user: await this.exclude(user, [
-                                        "password",
-                                    ]),
-                                },
-                                "Sign up success"
-                            );
-                        });
-                    } catch (error) {
-                        return ResponseFormatter.error(
-                            res,
-                            error,
-                            "Sign up failed",
-                            400
-                        );
-                    }
-                }
-            )(req, res, next);
+            const payload = req.body;
+            const user = await this.userService.register(payload);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Sign up success and please verify your email first"
+            );
         } catch (error) {
             return ResponseFormatter.error(res, error, "Sign up failed", 400);
+        }
+    };
+
+    verifyEmail = async (req, res) => {
+        try {
+            const { token } = req.params;
+            // return res.json(token);
+            const user = await this.userService.verifyEmail(token);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Email verified"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Email verification failed",
+                400
+            );
+        }
+    };
+
+    resendEmailVerification = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const user = await this.userService.resendEmailVerification(email);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Email verification sent"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Email verification failed",
+                400
+            );
+        }
+    };
+
+    resetPassword = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const user = await this.userService.resetPassword(email);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Reset password success"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Reset password failed",
+                400
+            );
+        }
+    };
+
+    changePassword = async (req, res) => {
+        try {
+            const { token } = req.params;
+            const { password } = req.body;
+            const user = await this.userService.changePassword(token, password);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Change password success"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Change password failed",
+                400
+            );
+        }
+    };
+
+    resendPasswordReset = async (req, res) => {
+        try {
+            const { email } = req.body;
+            const user = await this.userService.resendPasswordReset(email);
+            return ResponseFormatter.success(
+                res,
+                await this.exclude(user, ["password"]),
+                "Reset password sent"
+            );
+        } catch (error) {
+            return ResponseFormatter.error(
+                res,
+                error,
+                "Reset password failed",
+                400
+            );
         }
     };
 
