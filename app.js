@@ -3,6 +3,10 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const session = require('express-session');
+const passport = require('passport');
+const flash = require('connect-flash');
+// const connectEnsureLogin = require('connect-ensure-login');
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -18,6 +22,15 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  secret: 'secretStringForSession',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 60000 }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
