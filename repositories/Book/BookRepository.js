@@ -7,7 +7,11 @@ const BookRepository = class {
     }
 
     getAllBooks = async () => {
-        const books = await this.book.findMany();
+        const books = await this.book.findMany({
+            include: {
+                user: true,
+            },
+        });
         return books;
     }
 
@@ -15,7 +19,7 @@ const BookRepository = class {
         const book = await this.book.create({
             data: {
                 title: data.title,
-                author: data.author,
+                userId: data.userId,
                 description: data.description,
                 publisher: data.publisher,
                 price: parseInt(data.price),
@@ -40,7 +44,7 @@ const BookRepository = class {
             },
             data: {
                 title: data.title,
-                author: data.author,
+                userId: data.userId,
                 description: data.description,
                 publisher: data.publisher,
                 price: parseInt(data.price),
