@@ -7,11 +7,6 @@ const storeBookValidation = [
     .withMessage("Title is required")
     .isString()
     .withMessage("Title must be a string"),
-  body("author")
-    .notEmpty()
-    .withMessage("Author is required")
-    .isString()
-    .withMessage("Author must be a string"),
   body("description")
     .notEmpty()
     .withMessage("Description is required")
