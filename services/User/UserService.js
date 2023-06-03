@@ -10,21 +10,27 @@ const UserService = class {
         this.crypto = crypto;
     }
 
+    delay = (ms) => {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    };
+
     register = async (data) => {
         if (await this.userRepository.findByEmail(data.email)) {
             throw new Error("Email already used");
         }
         data.password = bcrypt.hashSync(data.password, 10);
         const user = await this.userRepository.register(data);
-        await this.sendEmailVerification(user);
+        setTimeout(async () => {
+            await this.sendEmailVerification(user);
+        }, 1000);
         return user;
-    }
+    };
 
     generateToken = async (user) => {
         const token = await this.crypto.randomBytes(20).toString("hex");
         await this.userRepository.saveToken(user, token);
         return token;
-    }
+    };
 
     sendEmailVerification = async (user) => {
         user = await this.userRepository.findByEmail(user.email);
@@ -40,7 +46,7 @@ const UserService = class {
             <p>${url}</p>`,
         };
         return await this.NodeMailer.sendMail(mailOptions);
-    }
+    };
 
     verifyEmail = async (token) => {
         const user = await this.userRepository.findByToken(token);
@@ -49,16 +55,21 @@ const UserService = class {
         }
         await this.userRepository.verifyEmail(user);
         return user;
-    }
-    
+    };
+
     resendEmailVerification = async (email) => {
         const user = await this.userRepository.findByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
-        await this.sendEmailVerification(user);
+        if(user.emailVerifiedAt) {
+            throw new Error("Email already verified");
+        }
+        setTimeout(async () => {
+            await this.sendEmailVerification(user);
+        }, 1000);
         return user;
-    }
+    };
 
     resetPassword = async (email) => {
         const user = await this.userRepository.findByEmail(email);
@@ -73,20 +84,24 @@ const UserService = class {
             subject: "Reset Password",
             html: `<p>Click <a href="${url}">here</a> to reset your password</p>
             <p>Or copy this link to your browser</p>
-            <p>${url}</p>`
+            <p>${url}</p>`,
         };
-        await this.NodeMailer.sendMail(mailOptions);
+        setTimeout(async () => {
+            await this.NodeMailer.sendMail(mailOptions);
+        }, 1000);
         return user;
-    }
+    };
 
     resendPasswordReset = async (email) => {
         const user = await this.userRepository.findByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
-        await this.resetPassword(user.email);
+        setTimeout(async () => {
+            await this.resetPassword(user);
+        }, 1000);
         return user;
-    }
+    };
 
     changePassword = async (token, password) => {
         const user = await this.userRepository.findByToken(token);
@@ -96,7 +111,7 @@ const UserService = class {
         password = bcrypt.hashSync(password, 10);
         await this.userRepository.changePassword(user, password);
         return user;
-    }
+    };
 };
 
 module.exports = UserService;
